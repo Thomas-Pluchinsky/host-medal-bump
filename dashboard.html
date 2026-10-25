@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Host Medal Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<nav class="top"><div class="inner">
+  <span class="brand">Host Medal Bump</span>
+  <a href="index.html">Report</a>
+  <a href="dashboard.html" class="active">Dashboard</a>
+  <button id="theme-toggle" type="button">Light / dark</button>
+</div></nav>
+
+<main>
+<h1>Hosting and medal share, Summer Games 1992–2008</h1>
+<p class="byline">Medals as the medal table counts them (a team's medal counts once). Alec Pluchinsky</p>
+
+<section class="filters" aria-label="Filters">
+  <fieldset>
+    <legend>Games</legend>
+    <div id="f-games"></div>
+  </fieldset>
+  <label class="f">Country
+    <select id="f-country"></select>
+  </label>
+  <label class="f">Sport
+    <select id="f-sport"></select>
+  </label>
+  <button class="btn" id="reset" type="button">Reset filters</button>
+</section>
+
+<section class="kpis" aria-label="Summary numbers">
+  <div class="kpi"><div class="v" id="kpi-medals">…</div><div class="l">Medals awarded</div></div>
+  <div class="kpi"><div class="v" id="kpi-gold">…</div><div class="l">Gold medals</div></div>
+  <div class="kpi"><div class="v" id="kpi-countries">…</div><div class="l">Countries winning a medal</div></div>
+  <div class="kpi"><div class="v" id="kpi-pergames">…</div><div class="l">Average medals per Games</div></div>
+</section>
+
+<div class="card">
+  <div class="row">
+    <h2 style="margin:0" id="t1">Medal share by Games, five hosts</h2>
+    <div class="seg" role="group" aria-label="Measure">
+      <button type="button" data-m="share" aria-pressed="true">Medal share</button>
+      <button type="button" data-m="n" aria-pressed="false">Medals</button>
+      <button type="button" data-m="gold" aria-pressed="false">Gold medals</button>
+    </div>
+  </div>
+  <div class="chart tall"><canvas id="d1"></canvas></div>
+  <p class="caption" id="cap1">Large marker = that country's home Games. Share = medals ÷ all medals at that Games in the selected sport(s).</p>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h2 style="margin:0 0 8px">Home Games vs other selected Games</h2>
+    <div class="chart"><canvas id="d2"></canvas></div>
+    <p class="caption" id="cap2">Medal share at home and average share at the other selected Games.</p>
+  </div>
+  <div class="card">
+    <h2 style="margin:0 0 8px">Top 10 countries by medals</h2>
+    <div class="chart"><canvas id="d3"></canvas></div>
+    <p class="caption">Respects the Games and Sport filters. The selected country is highlighted and added if outside the top 10.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin:0 0 8px">Numbers behind the top chart</h2>
+  <div class="table-wrap"><table id="tbl"></table></div>
+</div>
+
+<footer>Every number is computed in your browser from summer_medals_1992_2008.csv. Definitions are on the <a href="index.html">report page</a>.</footer>
+</main>
+
+<script src="app.js"></script>
+<script>
+initTheme();
+chartDefaults();
+let ALL = [], measure = 'share', charts = {};
+const $ = id => document.getElementById(id);
+
+function readFilters() {
+  return {
+    games: [...document.querySelectorAll('#f-games input:checked')].map(i => +i.value),
+    country: $('f-country').value,
+    sport: $('f-sport').value
+  };
+}
+
+function update() {
+  const f = readFilters();
+  const games = f.games.slice().sort();
+  const bySport = ALL.filter(m => f.sport === 'ALL' || m.Sport === f.sport);           // share denominator
+  const inGames = bySport.filter(m => games.includes(m.Edition));
+  const view = inGames.filter(m => f.country === 'ALL' || m.NOC === f.country);        // the four numbers
+
+  renderKPIs(summarize(view));
+
+  const st = shareTable(inGames, bySport);
+  const series = f.country === 'ALL' ? HOST_ORDER : [f.country];
+  const val = (n, y) => { const c = cell(st, n, y); return measure === 'share' ? +c.share.toFixed(2) : measure === 'n' ? c.n : c.gold; };
+  const unit = measure === 'share' ? 'Medal share (%)' : measure === 'n' ? 'Medals' : 'Gold medals';
+
+  $('t1').textContent = `${unit.replace(' (%)', '')} by Games, ${f.country === 'ALL' ? 'five hosts' : nameOf(f.country)}`;
+  charts.d1.data.labels = games.map(y => `${y} ${CITY[y]}`);
+  charts.d1.data.datasets = series.map((n, i) => {
+    const col = HOST_ORDER.includes(n) ? HOST_COLOR(n) : seriesColor(0);
+    return {
+      label: nameOf(n), data: games.map(y => val(n, y)), borderColor: col, backgroundColor: col, borderWidth: 2,
+      pointRadius: games.map(y => HOST[y] === n ? 8 : 3), pointBorderColor: css('--surface'), pointBorderWidth: 2, pointHoverRadius: 8
+    };
+  });
+  charts.d1.options.scales.y.title.text = unit;
+  charts.d1.update();
+
+  // Home vs other selected Games, for hosts whose home Games is selected.
+  const hosts = HOST_ORDER.filter(n => games.includes(HOST_GAMES[n]) && (f.country === 'ALL' || f.country === n));
+  const others = n => games.filter(y => y !== HOST_GAMES[n]);
+  charts.d2.data.labels = hosts.map(n => `${nameOf(n)} (${HOST_GAMES[n]})`);
+  charts.d2.data.datasets[0].data = hosts.map(n => +cell(st, n, HOST_GAMES[n]).share.toFixed(2));
+  charts.d2.data.datasets[1].data = hosts.map(n => { const o = others(n); return o.length ? +mean(o.map(y => cell(st, n, y).share)).toFixed(2) : null; });
+  charts.d2.update();
+  $('cap2').textContent = hosts.length ? 'Medal share at home and average share at the other selected Games.'
+    : (f.country !== 'ALL' && !HOST_ORDER.includes(f.country) ? `${nameOf(f.country)} did not host a Games in 1992–2008.` : 'No host\'s home Games is selected.');
+
+  // Top 10 by medals under Games + Sport filters.
+  const counts = {}; inGames.forEach(m => { counts[m.NOC] = (counts[m.NOC] || 0) + 1; });
+  let top = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 10);
+  if (f.country !== 'ALL' && !top.some(t => t[0] === f.country)) top.push([f.country, counts[f.country] || 0]);
+  charts.d3.data.labels = top.map(t => nameOf(t[0]));
+  charts.d3.data.datasets[0].data = top.map(t => t[1]);
+  charts.d3.data.datasets[0].backgroundColor = top.map(t => f.country === 'ALL' || t[0] === f.country ? css('--series-1') : css('--other'));
+  charts.d3.update();
+
+  // Table behind chart 1.
+  $('tbl').innerHTML = `<thead><tr><th>Country</th>${games.map(y => `<th>${y} medals</th><th>${y} gold</th><th>${y} share</th>`).join('')}</tr></thead>
+    <tbody>${series.map(n => `<tr><td>${nameOf(n)} (${n})</td>${games.map(y => { const c = cell(st, n, y); return `<td>${c.n}</td><td>${c.gold}</td><td>${fmt2(c.share)}%</td>`; }).join('')}</tr>`).join('')}</tbody>`;
+}
+
+loadData().then(({ medals }) => {
+  ALL = medals;
+  $('f-games').innerHTML = GAMES.map(y => `<label class="chk"><input type="checkbox" value="${y}" checked> ${y}</label>`).join('');
+  const nocs = [...new Set(ALL.map(m => m.NOC))].sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+  $('f-country').innerHTML = '<option value="ALL">All countries</option>' + nocs.map(n => `<option value="${n}">${nameOf(n)} (${n})</option>`).join('');
+  const sports = [...new Set(ALL.map(m => m.Sport))].sort();
+  $('f-sport').innerHTML = '<option value="ALL">All sports</option>' + sports.map(s => `<option>${s}</option>`).join('');
+
+  charts.d1 = new Chart($('d1'), { type: 'line', data: { labels: [], datasets: [] }, options: {
+    interaction: { mode: 'index', intersect: false },
+    scales: { y: { beginAtZero: true, title: { display: true, text: '' } }, x: { grid: { display: false } } },
+    plugins: { tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${measure === 'share' ? fmt2(c.parsed.y) + '%' : c.parsed.y}` } } } } });
+  const barTip = { callbacks: { label: c => ` ${c.dataset.label}: ${fmt2(c.parsed.y)}%` } };
+  charts.d2 = new Chart($('d2'), { type: 'bar', data: { labels: [], datasets: [
+      { label: 'Home Games', data: [], backgroundColor: css('--series-1'), borderRadius: 4, borderSkipped: 'start' },
+      { label: 'Other selected Games (avg)', data: [], backgroundColor: css('--other'), borderRadius: 4, borderSkipped: 'start' } ] },
+    options: { interaction: { mode: 'index', intersect: false }, plugins: { tooltip: barTip },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Medal share (%)' } }, x: { grid: { display: false } } } } });
+  charts.d3 = new Chart($('d3'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Medals', data: [], borderRadius: 4, borderSkipped: 'start' }] },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, title: { display: true, text: 'Medals' } }, y: { grid: { display: false } } } } });
+
+  document.querySelectorAll('.filters input, .filters select').forEach(el => el.addEventListener('change', update));
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    measure = b.dataset.m;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    update();
+  }));
+  $('reset').addEventListener('click', () => {
+    document.querySelectorAll('#f-games input').forEach(i => { i.checked = true; });
+    $('f-country').value = 'ALL'; $('f-sport').value = 'ALL';
+    update();
+  });
+  update();
+});
+</script>
+</body>
+</html>

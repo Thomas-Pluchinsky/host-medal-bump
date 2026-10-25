@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Host Medal Bump</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<nav class="top"><div class="inner">
+  <span class="brand">Host Medal Bump</span>
+  <a href="index.html" class="active">Report</a>
+  <a href="dashboard.html">Dashboard</a>
+  <button id="theme-toggle" type="button">Light / dark</button>
+</div></nav>
+
+<main>
+<h1>Does hosting the Summer Olympics raise a country's share of the medals, and does the gain last? Medals as the medal table counts them, Barcelona 1992 to Beijing 2008</h1>
+<p class="byline">Alec Pluchinsky</p>
+
+<p class="lede">Yes, hosting raises a country's share of the medals: four of the five hosts from 1992 to 2008 won their largest share of the period at home, and on average a host's home share was 1.6 times its share at the other four Games. The gain does not last: every host with a later Games in the data lost share at the next one, and Greece fell from 16 medals at home to 4. If your country wins the bid, budget the home Games as a one-time peak, start the build-up early, and commit funding past the home Games so the program does not fall back the way Greece's did.</p>
+
+<section class="kpis" aria-label="Summary numbers">
+  <div class="kpi"><div class="v" id="kpi-medals">…</div><div class="l">Medals awarded</div></div>
+  <div class="kpi"><div class="v" id="kpi-gold">…</div><div class="l">Gold medals</div></div>
+  <div class="kpi"><div class="v" id="kpi-countries">…</div><div class="l">Countries winning a medal</div></div>
+  <div class="kpi"><div class="v" id="kpi-pergames">…</div><div class="l">Average medals per Games</div></div>
+</section>
+<p class="note">All four numbers cover the five Games 1992–2008, every country and every sport. A team's medal counts once.</p>
+
+<h2>1. Four of the five hosts won their largest medal share of the period at home</h2>
+<p>Medal share is a country's medals divided by all medals awarded at that Games. Spain peaked at 2.71% in Barcelona 1992, Australia at 6.27% in Sydney 2000, Greece at 1.72% in Athens 2004 and China at 10.46% in Beijing 2008; none of them came close to those shares at any other Games in the period. The United States is the exception: its 12.01% in Atlanta 1996 was below its 13.28% in 1992, when the US was already the largest medal winner.</p>
+<div class="card"><div class="chart tall"><canvas id="c1" aria-label="Medal share by Games for the five hosts"></canvas></div>
+<p class="caption">Medal share (%) by Games for the five host countries. The large marker is each country's home Games.</p></div>
+
+<h2>2. At home, hosts averaged 1.6 times their share at the other Games</h2>
+<p>Comparing each host's home share with its average share at the other four Games: Greece 1.72% against 0.76% (2.3 times), China 10.46% against 6.38% (1.6 times), Spain 2.71% against 1.76% (1.5 times), Australia 6.27% against 4.57% (1.4 times) and the United States 12.01% against 11.43% (1.05 times). The average of the five ratios is 1.58. In medals, China's home share added about 4.1 percentage points; the others added 0.6 to 1.7 points.</p>
+<div class="card"><div class="chart"><canvas id="c2" aria-label="Home share versus average share at the other Games"></canvas></div>
+<p class="caption">Medal share (%) at the home Games and the average share at the other four Games, by host.</p></div>
+
+<h2>3. The gain did not last: every host with a later Games lost share at the next one</h2>
+<p>Four hosts have a Games after their own in the data. Spain went from 2.71% (22 medals) to 2.02% (17), the United States from 12.01% (101) to 9.95% (92), Australia from 6.27% (58) to 5.28% (49) and Greece from 1.72% (16) to 0.42% (4). Greece ended below the 1.41% it won in 2000, before its home Games. China hosted the last Games in the data, so its next Games is not in the file.</p>
+<div class="card"><div class="chart"><canvas id="c3" aria-label="Home share versus share at the next Games"></canvas></div>
+<p class="caption">Medal share (%) at the home Games and at the next Games, for the four hosts with a later Games in the data.</p></div>
+
+<h2>4. In gold medals, all five hosts beat their own average, the United States included</h2>
+<p>Gold share is a country's gold medals divided by all gold medals at that Games. Every host's gold share at home was above its average at the other four Games: Spain 5.00% against 1.38% (13 golds in Barcelona, 3 to 5 at every other Games), China 16.89% against 8.02%, the United States 16.24% against 12.55% (44 golds in Atlanta, 36 or 37 at every other Games), Greece 1.99% against 0.90% and Australia 5.37% against 4.07%. Gold is where the US home effect shows.</p>
+<div class="card"><div class="chart"><canvas id="c4" aria-label="Home gold share versus average gold share at the other Games"></canvas></div>
+<p class="caption">Gold share (%) at the home Games and the average gold share at the other four Games, by host.</p></div>
+
+<h2>About the data</h2>
+<h3>Where the data come from</h3>
+<p>The Guardian's list of Summer Olympic medallists, 1896–2008, published by Tableau Public as the sample data set <em>Summer Olympics Medalist Dataset</em> (file <code>Summer_Olympic_medallists_1896-2008.xlsx</code>, sheet ALL MEDALISTS). The file in this repository, <code>summer_medals_1992_2008.csv</code>, is that sheet with only the 1992–2008 rows and without the Athlete column.</p>
+<h3>What one row is</h3>
+<p>One row is one athlete's medal: one person, in one event, at one Games, for one country. A basketball gold therefore has 12 rows. The file has 9,619 rows.</p>
+<h3>Which rows are dropped, and why</h3>
+<ul>
+  <li><strong>Games before 1992 (19,597 rows).</strong> The groups are not the same before 1992: the Soviet Union, East Germany and West Germany stop existing, and 1980 and 1984 were boycotted. From 1992 Germany competes as one team and the country list is close to stable.</li>
+  <li><strong>The Athlete column.</strong> The site is public and no number needs athletes' names. No rows are lost by dropping it.</li>
+  <li><strong>Repeat rows of the same medal (5,156 rows).</strong> Team members' rows collapse into one medal, as the official medal table counts it. They are not deleted from the file; the pages count distinct medals.</li>
+</ul>
+<p>Three 1992 groups appear only in 1992: the Unified Team (EUN, the former Soviet republics), Czechoslovakia (TCH) and the Independent Olympic Participants (IOP). They are kept, because their medals are part of the 1992 total that every 1992 share is divided by. Medals stripped or reassigned after the file was published are not corrected; both builds count the file as it is.</p>
+<h3>How each summary number is computed</h3>
+<ul>
+  <li><strong>Medal</strong> = a distinct combination of Games, discipline, event, event gender, country and medal colour. Event gender is part of the key so the men's and women's 100 m are two events and a mixed event is one.</li>
+  <li><strong>Medals awarded</strong> = the number of distinct medals.</li>
+  <li><strong>Gold medals</strong> = the number of distinct medals whose colour is gold.</li>
+  <li><strong>Countries winning a medal</strong> = the number of distinct country codes (NOC) among those medals.</li>
+  <li><strong>Average medals per Games</strong> = medals awarded divided by the number of distinct Games among those medals.</li>
+  <li><strong>Medal share</strong> (charts) = a country's medals at a Games divided by all medals awarded at that Games, in percent. <strong>Gold share</strong> is the same with gold medals only.</li>
+</ul>
+<p>Known limit: a medal is counted once per country per event and colour. In the rare case where two athletes from the same country tie for the same medal in the same event, the file shows one medal. Against the official tables the counts match closely: China 100 and the US 110 in 2008, the Unified Team 112 in 1992.</p>
+
+<div id="agreement"></div>
+
+<footer>Data: The Guardian via Tableau Public sample data. Built with plain HTML, CSS, JavaScript and Chart.js; every number is computed in the browser from the data file.</footer>
+</main>
+
+<script src="app.js"></script>
+<script>
+initTheme();
+chartDefaults();
+loadData().then(({ medals }) => {
+  const s = summarize(medals);
+  renderKPIs(s);
+
+  const st = shareTable(medals, medals);
+  const golds = medals.filter(m => m.Medal === 'Gold');
+  const gst = shareTable(golds, golds);
+  const hostLabel = n => `${nameOf(n)} (${HOST_GAMES[n]})`;
+
+  // Chart 1: share by Games for each host, home Games marked.
+  new Chart(document.getElementById('c1'), {
+    type: 'line',
+    data: {
+      labels: GAMES.map(y => `${y} ${CITY[y]}`),
+      datasets: HOST_ORDER.map(n => ({
+        label: nameOf(n),
+        data: GAMES.map(y => +cell(st, n, y).share.toFixed(2)),
+        borderColor: HOST_COLOR(n), backgroundColor: HOST_COLOR(n), borderWidth: 2,
+        pointRadius: GAMES.map(y => HOST[y] === n ? 8 : 3),
+        pointBorderColor: css('--surface'), pointBorderWidth: 2, pointHoverRadius: 8
+      }))
+    },
+    options: {
+      interaction: { mode: 'index', intersect: false },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Medal share (%)' } }, x: { grid: { display: false } } },
+      plugins: { tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt2(c.parsed.y)}%` } } }
+    }
+  });
+
+  const pair = (tbl, noc, measure) => {
+    const home = cell(tbl, noc, HOST_GAMES[noc]).share;
+    const other = mean(GAMES.filter(y => y !== HOST_GAMES[noc]).map(y => cell(tbl, noc, y).share));
+    return [home, other];
+  };
+  const barOpts = yTitle => ({
+    interaction: { mode: 'index', intersect: false },
+    scales: { y: { beginAtZero: true, title: { display: true, text: yTitle } }, x: { grid: { display: false } } },
+    plugins: { tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt2(c.parsed.y)}%` } } },
+    datasets: { bar: { borderRadius: 4, borderSkipped: 'start', categoryPercentage: 0.7, barPercentage: 0.9 } }
+  });
+
+  // Chart 2: home vs average of other Games.
+  new Chart(document.getElementById('c2'), {
+    type: 'bar',
+    data: {
+      labels: HOST_ORDER.map(hostLabel),
+      datasets: [
+        { label: 'Home Games', data: HOST_ORDER.map(n => +pair(st, n)[0].toFixed(2)), backgroundColor: css('--series-1') },
+        { label: 'Average of the other four Games', data: HOST_ORDER.map(n => +pair(st, n)[1].toFixed(2)), backgroundColor: css('--other') }
+      ]
+    },
+    options: barOpts('Medal share (%)')
+  });
+
+  // Chart 3: home vs next Games.
+  const withNext = HOST_ORDER.filter(n => HOST_GAMES[n] < 2008);
+  new Chart(document.getElementById('c3'), {
+    type: 'bar',
+    data: {
+      labels: withNext.map(n => `${nameOf(n)} (${HOST_GAMES[n]} → ${HOST_GAMES[n] + 4})`),
+      datasets: [
+        { label: 'Home Games', data: withNext.map(n => +cell(st, n, HOST_GAMES[n]).share.toFixed(2)), backgroundColor: css('--series-1') },
+        { label: 'Next Games', data: withNext.map(n => +cell(st, n, HOST_GAMES[n] + 4).share.toFixed(2)), backgroundColor: css('--series-2') }
+      ]
+    },
+    options: barOpts('Medal share (%)')
+  });
+
+  // Chart 4: gold share, home vs others.
+  new Chart(document.getElementById('c4'), {
+    type: 'bar',
+    data: {
+      labels: HOST_ORDER.map(hostLabel),
+      datasets: [
+        { label: 'Home Games', data: HOST_ORDER.map(n => +pair(gst, n)[0].toFixed(2)), backgroundColor: css('--series-1') },
+        { label: 'Average of the other four Games', data: HOST_ORDER.map(n => +pair(gst, n)[1].toFixed(2)), backgroundColor: css('--other') }
+      ]
+    },
+    options: barOpts('Gold share (%)')
+  });
+
+  // Agreement table: shown once the Tableau numbers are entered in app.js.
+  if (TABLEAU.url) {
+    const rows = [
+      ['Medals awarded', fmtInt(s.medals), TABLEAU.medals, Math.round(s.medals)],
+      ['Gold medals', fmtInt(s.gold), TABLEAU.gold, Math.round(s.gold)],
+      ['Countries winning a medal', fmtInt(s.countries), TABLEAU.countries, Math.round(s.countries)],
+      ['Average medals per Games', fmt1(s.perGames), TABLEAU.perGames, +s.perGames.toFixed(1)]
+    ];
+    const ok = rows.every(r => r[2] != null && Math.abs(+r[2] - r[3]) < 0.05);
+    document.getElementById('agreement').innerHTML = `
+      <h3>Agreement between the two builds</h3>
+      <p>Both builds read the same file with every Games, every country and every sport selected.</p>
+      <div class="card table-wrap"><table>
+        <thead><tr><th>Summary number</th><th>Website</th><th>Tableau</th></tr></thead>
+        <tbody>${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2] == null ? '—' : (r[0].startsWith('Average') ? fmt1(+r[2]) : fmtInt(+r[2]))}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <p>${ok ? 'All four numbers match. A spot check with only Greece selected in the Country filter also agrees in both builds: 43 medals, 16 gold, 1 country, 8.6 medals per Games.' : (TABLEAU.note || '')}</p>
+      <p>Tableau Public dashboard: <a href="${TABLEAU.url}">${TABLEAU.url}</a></p>`;
+  }
+});
+</script>
+</body>
+</html>
