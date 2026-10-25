@@ -1,11 +1,11 @@
 # Host Medal Bump
 
 **Question:** Does hosting the Summer Olympics raise a country's share of the medals, and does the gain last after the Games?
-**Reader:** The high-performance director of a national Olympic committee whose country is bidding to host a Summer Games.
+**Reader:** The director of a national Olympic committee whose country is bidding to host a Summer Games.
 **Rows counted:** Medals as the official medal table counts them: one per event, country and medal colour, so a team's medal counts once. They are built from the file's 9,619 medalist rows.
 **Period:** The five Summer Games from Barcelona 1992 to Beijing 2008. Each one had a different host: Spain, the United States, Australia, Greece and China.
 
-Author: Alec Pluchinsky
+Author: Thomas Alec Pluchinsky
 
 Tableau Public dashboard (same data file, same definitions): https://public.tableau.com/app/profile/thomas.pluchinsky7929/viz/HostMedalBump/Dashboard_1
 
