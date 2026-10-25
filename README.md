@@ -19,6 +19,7 @@ Tableau Public dashboard (same data file, same definitions): https://public.tabl
 | `style.css` | Shared fonts, colours (light and dark) and layout. |
 | `summer_medals_1992_2008.csv` | The data file. |
 | `README.md` | This file. |
+| `.gitattributes` | Git setting added by GitHub Desktop that normalizes line endings; not used by the pages. |
 
 ## Where the data came from
 
