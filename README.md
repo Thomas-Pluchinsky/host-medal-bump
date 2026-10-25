@@ -49,7 +49,3 @@ The source is the Guardian's list of Summer Olympic medallists, 1896–2008. Tab
 - **Medal share** = a country's medals at a Games ÷ all medals at that Games (in the selected sports) × 100.
 
 With all filters at their defaults, the four summary numbers are 4,463 / 1,432 / 116 / 892.6.
-
-## Running it locally
-
-The pages load the CSV with `fetch`, so opening the files by double-clicking them does not work. Serve the folder instead, for example with `python -m http.server`, then open http://localhost:8000. GitHub Pages serves the files the same way.
