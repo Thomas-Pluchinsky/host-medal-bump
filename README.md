@@ -7,7 +7,7 @@
 
 Author: Alec Pluchinsky
 
-Tableau Public dashboard (same data file, same definitions): https://public.tableau.com/app/profile/thomas.pluchinsky7929/viz/HostMedalBump/Dashboard
+Tableau Public dashboard (same data file, same definitions): https://public.tableau.com/app/profile/thomas.pluchinsky7929/viz/HostMedalBump/Dashboard_1
 
 ## Files
 

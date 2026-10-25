@@ -7,7 +7,7 @@ const DATA_FILE = 'summer_medals_1992_2008.csv';
 // appears only when url is set. Type the four numbers exactly as Tableau shows them
 // with all filters at their defaults (every Games, every country, every sport).
 const TABLEAU = {
-  url: 'https://public.tableau.com/app/profile/thomas.pluchinsky7929/viz/HostMedalBump/Dashboard',
+  url: 'https://public.tableau.com/app/profile/thomas.pluchinsky7929/viz/HostMedalBump/Dashboard_1',
   medals: 4463,       // Medals awarded
   gold: 1432,         // Gold medals
   countries: 116,     // Countries winning a medal
